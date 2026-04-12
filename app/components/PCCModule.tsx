@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { PCC, ControlPCC } from "../lib/types";
 import { generateId } from "../lib/storage";
+import PhotoUpload from "./PhotoUpload";
 
 interface PCCModuleProps {
   pccs: PCC[];
@@ -16,6 +17,7 @@ const emptyControl = (): Omit<ControlPCC, "id" | "pccId"> => ({
   conforme: true,
   operario: "",
   accionCorrectora: "",
+  fotos: [],
 });
 
 export default function PCCModule({ pccs, onChange, tipo }: PCCModuleProps) {
@@ -173,6 +175,15 @@ export default function PCCModule({ pccs, onChange, tipo }: PCCModuleProps) {
                       </div>
                     )}
 
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Fotos</label>
+                      <PhotoUpload
+                        fotos={controlForm.fotos || []}
+                        onChange={(fotos) => setControlForm({ ...controlForm, fotos })}
+                        folder="pcc-controles"
+                      />
+                    </div>
+
                     <button
                       onClick={() => handleAddControl(pcc.id)}
                       className="w-full py-3 bg-green-600 text-white rounded-xl text-base font-semibold active:bg-green-700"
@@ -221,6 +232,19 @@ export default function PCCModule({ pccs, onChange, tipo }: PCCModuleProps) {
                               </span>
                             )}
                           </div>
+                          {ctrl.fotos && ctrl.fotos.length > 0 && (
+                            <div className="flex gap-1 mt-1">
+                              {ctrl.fotos.map((foto, fi) => (
+                                <img
+                                  key={fi}
+                                  src={foto}
+                                  alt={`Foto ${fi + 1}`}
+                                  className="w-8 h-8 object-cover rounded cursor-pointer"
+                                  onClick={() => window.open(foto, "_blank")}
+                                />
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}

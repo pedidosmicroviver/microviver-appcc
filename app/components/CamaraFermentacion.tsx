@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Fermentacion, ControlFermentacion, MateriaPrima } from "../lib/types";
 import { generateId } from "../lib/storage";
+import PhotoUpload from "./PhotoUpload";
 
 interface CamaraFermentacionProps {
   data: Fermentacion[];
@@ -22,6 +23,7 @@ const EMPTY_CONTROL: Omit<ControlFermentacion, "fecha"> = {
   olor: "",
   conforme: true,
   observaciones: "",
+  fotos: [],
 };
 
 interface NewFermentForm {
@@ -96,6 +98,7 @@ export default function CamaraFermentacion({
   const [fermForm, setFermForm] = useState<NewFermentForm>(EMPTY_FERM_FORM);
   const [controlForm, setControlForm] = useState<Omit<ControlFermentacion, "fecha">>(EMPTY_CONTROL);
   const [showControlForm, setShowControlForm] = useState<string | null>(null);
+  const [fermFormFotos, setFermFormFotos] = useState<string[]>([]);
 
   const handleAddFermentation = () => {
     if (!fermForm.producto || !fermForm.loteProduccion || !fermForm.fechaInicio) return;
@@ -107,9 +110,11 @@ export default function CamaraFermentacion({
       materiasPrimas: fermForm.selectedMPs,
       controles: [],
       estado: "activa",
+      fotos: fermFormFotos,
     };
     onChange([...data, newFerm]);
     setFermForm(EMPTY_FERM_FORM);
+    setFermFormFotos([]);
     setShowNewForm(false);
   };
 
@@ -215,6 +220,14 @@ export default function CamaraFermentacion({
                 ))}
               </div>
             )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fotos</label>
+            <PhotoUpload
+              fotos={fermFormFotos}
+              onChange={setFermFormFotos}
+              folder="fermentacion"
+            />
           </div>
           <button
             onClick={handleAddFermentation}
@@ -328,6 +341,7 @@ export default function CamaraFermentacion({
                             <th className="text-left p-2">HR%</th>
                             <th className="text-left p-2">Aspecto</th>
                             <th className="text-left p-2">Olor</th>
+                            <th className="text-left p-2">Fotos</th>
                             <th className="text-center p-2 rounded-tr-lg">Conf.</th>
                           </tr>
                         </thead>
@@ -352,6 +366,21 @@ export default function CamaraFermentacion({
                                   </td>
                                   <td className="p-2">{ctrl.aspectoVisual}</td>
                                   <td className="p-2">{ctrl.olor}</td>
+                                  <td className="p-2">
+                                    {ctrl.fotos && ctrl.fotos.length > 0 && (
+                                      <div className="flex gap-1">
+                                        {ctrl.fotos.map((foto, fi) => (
+                                          <img
+                                            key={fi}
+                                            src={foto}
+                                            alt={`Foto ${fi + 1}`}
+                                            className="w-8 h-8 object-cover rounded cursor-pointer"
+                                            onClick={() => window.open(foto, "_blank")}
+                                          />
+                                        ))}
+                                      </div>
+                                    )}
+                                  </td>
                                   <td className="p-2 text-center">
                                     {ctrl.conforme ? (
                                       <span className="text-green-600 font-bold">OK</span>
@@ -476,6 +505,14 @@ export default function CamaraFermentacion({
                           className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base"
                           rows={2}
                           placeholder="Observaciones..."
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Fotos</label>
+                        <PhotoUpload
+                          fotos={controlForm.fotos || []}
+                          onChange={(fotos) => setControlForm({ ...controlForm, fotos })}
+                          folder="fermentacion-controles"
                         />
                       </div>
                       <label className="flex items-center gap-3 py-2 cursor-pointer">

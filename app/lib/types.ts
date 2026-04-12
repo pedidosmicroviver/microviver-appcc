@@ -9,6 +9,7 @@ export interface MateriaPrima {
   unidad: string;
   coaPendiente: boolean;
   notas: string;
+  fotos: string[];
 }
 
 export interface ControlFermentacion {
@@ -21,6 +22,7 @@ export interface ControlFermentacion {
   olor: string;
   conforme: boolean;
   observaciones: string;
+  fotos: string[];
 }
 
 export interface Fermentacion {
@@ -31,6 +33,7 @@ export interface Fermentacion {
   materiasPrimas: string[];
   controles: ControlFermentacion[];
   estado: "activa" | "completada" | "rechazada";
+  fotos: string[];
 }
 
 export interface HojaProduccion {
@@ -43,6 +46,7 @@ export interface HojaProduccion {
   fermentacionId: string;
   estado: "en_proceso" | "completada" | "rechazada";
   observaciones: string;
+  fotos: string[];
 }
 
 export interface HojaEnvasado {
@@ -58,6 +62,7 @@ export interface HojaEnvasado {
   unidades: number;
   estado: "en_proceso" | "completado" | "rechazado";
   observaciones: string;
+  fotos: string[];
 }
 
 export interface ControlPCC {
@@ -68,6 +73,7 @@ export interface ControlPCC {
   conforme: boolean;
   operario: string;
   accionCorrectora: string;
+  fotos: string[];
 }
 
 export interface PCC {
@@ -106,6 +112,7 @@ export interface Incidencia {
   estado: "abierta" | "cerrada";
   fechaCierre?: string;
   responsable: string;
+  fotos: string[];
 }
 
 export type TabId =

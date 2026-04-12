@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { Incidencia } from "../lib/types";
 import { generateId } from "../lib/storage";
+import PhotoUpload from "./PhotoUpload";
 
 interface IncidenciasProps {
   data: Incidencia[];
@@ -39,6 +40,7 @@ const emptyForm = (): Omit<Incidencia, "id"> => ({
   accionCorrectora: "",
   estado: "abierta",
   responsable: "",
+  fotos: [],
 });
 
 export default function Incidencias({ data, onChange }: IncidenciasProps) {
@@ -73,6 +75,10 @@ export default function Incidencias({ data, onChange }: IncidenciasProps) {
           : i
       )
     );
+  };
+
+  const handleUpdateFotos = (id: string, fotos: string[]) => {
+    onChange(data.map((i) => (i.id === id ? { ...i, fotos } : i)));
   };
 
   const tabs: { key: FilterTab; label: string; count: number }[] = [
@@ -182,6 +188,16 @@ export default function Incidencias({ data, onChange }: IncidenciasProps) {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">Fotos adjuntas</label>
+            <PhotoUpload
+              fotos={form.fotos || []}
+              onChange={(fotos) => setForm({ ...form, fotos })}
+              folder="incidencias"
+              maxPhotos={5}
+            />
+          </div>
+
           <button
             onClick={handleAdd}
             className="w-full py-3 bg-green-600 text-white rounded-xl text-base font-semibold active:bg-green-700"
@@ -253,6 +269,16 @@ export default function Incidencias({ data, onChange }: IncidenciasProps) {
                     </p>
                   </div>
                 )}
+
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Fotos adjuntas</h4>
+                  <PhotoUpload
+                    fotos={inc.fotos || []}
+                    onChange={(fotos) => handleUpdateFotos(inc.id, fotos)}
+                    folder="incidencias"
+                    maxPhotos={5}
+                  />
+                </div>
 
                 {inc.fechaCierre && (
                   <div className="bg-green-50 px-3 py-2 rounded-lg text-sm">

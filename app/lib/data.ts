@@ -12,6 +12,7 @@ export const DEMO_MATERIAS_PRIMAS: MateriaPrima[] = [
     unidad: "kg",
     coaPendiente: false,
     notas: "",
+    fotos: [],
   },
   {
     id: "MP002",
@@ -24,6 +25,7 @@ export const DEMO_MATERIAS_PRIMAS: MateriaPrima[] = [
     unidad: "kg",
     coaPendiente: true,
     notas: "Pendiente COA del proveedor",
+    fotos: [],
   },
   {
     id: "MP003",
@@ -36,6 +38,7 @@ export const DEMO_MATERIAS_PRIMAS: MateriaPrima[] = [
     unidad: "kg",
     coaPendiente: false,
     notas: "",
+    fotos: [],
   },
   {
     id: "MP004",
@@ -48,6 +51,7 @@ export const DEMO_MATERIAS_PRIMAS: MateriaPrima[] = [
     unidad: "kg",
     coaPendiente: false,
     notas: "",
+    fotos: [],
   },
   {
     id: "MP005",
@@ -60,6 +64,7 @@ export const DEMO_MATERIAS_PRIMAS: MateriaPrima[] = [
     unidad: "g",
     coaPendiente: false,
     notas: "Conservar 2-8C",
+    fotos: [],
   },
 ];
 
@@ -71,13 +76,14 @@ export const DEMO_FERMENTACIONES: Fermentacion[] = [
     fechaInicio: "2026-03-01",
     materiasPrimas: ["MP001", "MP004", "MP005"],
     controles: [
-      { dia: 1, fecha: "2026-03-01", ph: 6.2, temperatura: 21, humedadRelativa: 72, aspectoVisual: "Normal", olor: "Neutro", conforme: true, observaciones: "" },
-      { dia: 3, fecha: "2026-03-03", ph: 5.4, temperatura: 22, humedadRelativa: 70, aspectoVisual: "Burbujeo ligero", olor: "Ligeramente acido", conforme: true, observaciones: "Fermentacion iniciada correctamente" },
-      { dia: 7, fecha: "2026-03-07", ph: 4.1, temperatura: 21, humedadRelativa: 71, aspectoVisual: "Burbujeo activo", olor: "Acido lactico", conforme: true, observaciones: "pH bajo 4.6 - OK" },
-      { dia: 15, fecha: "2026-03-15", ph: 3.8, temperatura: 20, humedadRelativa: 69, aspectoVisual: "Estable", olor: "Acido agradable", conforme: true, observaciones: "" },
-      { dia: 30, fecha: "2026-03-30", ph: 3.5, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Clarificado", olor: "Acido suave", conforme: true, observaciones: "" },
+      { dia: 1, fecha: "2026-03-01", ph: 6.2, temperatura: 21, humedadRelativa: 72, aspectoVisual: "Normal", olor: "Neutro", conforme: true, observaciones: "", fotos: [] },
+      { dia: 3, fecha: "2026-03-03", ph: 5.4, temperatura: 22, humedadRelativa: 70, aspectoVisual: "Burbujeo ligero", olor: "Ligeramente acido", conforme: true, observaciones: "Fermentacion iniciada correctamente", fotos: [] },
+      { dia: 7, fecha: "2026-03-07", ph: 4.1, temperatura: 21, humedadRelativa: 71, aspectoVisual: "Burbujeo activo", olor: "Acido lactico", conforme: true, observaciones: "pH bajo 4.6 - OK", fotos: [] },
+      { dia: 15, fecha: "2026-03-15", ph: 3.8, temperatura: 20, humedadRelativa: 69, aspectoVisual: "Estable", olor: "Acido agradable", conforme: true, observaciones: "", fotos: [] },
+      { dia: 30, fecha: "2026-03-30", ph: 3.5, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Clarificado", olor: "Acido suave", conforme: true, observaciones: "", fotos: [] },
     ],
     estado: "activa",
+    fotos: [],
   },
   {
     id: "FERM-002",
@@ -86,14 +92,15 @@ export const DEMO_FERMENTACIONES: Fermentacion[] = [
     fechaInicio: "2026-02-20",
     materiasPrimas: ["MP004", "MP005"],
     controles: [
-      { dia: 1, fecha: "2026-02-20", ph: 6.0, temperatura: 22, humedadRelativa: 71, aspectoVisual: "Normal", olor: "Neutro", conforme: true, observaciones: "" },
-      { dia: 3, fecha: "2026-02-22", ph: 5.1, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Burbujeo", olor: "Acido", conforme: true, observaciones: "" },
-      { dia: 7, fecha: "2026-02-26", ph: 4.0, temperatura: 21, humedadRelativa: 72, aspectoVisual: "Activo", olor: "Acido lactico", conforme: true, observaciones: "" },
-      { dia: 15, fecha: "2026-03-06", ph: 3.7, temperatura: 20, humedadRelativa: 70, aspectoVisual: "Estable", olor: "Agradable", conforme: true, observaciones: "" },
-      { dia: 30, fecha: "2026-03-21", ph: 3.4, temperatura: 21, humedadRelativa: 69, aspectoVisual: "Clarificado", olor: "Suave", conforme: true, observaciones: "" },
-      { dia: 40, fecha: "2026-03-31", ph: 3.3, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Terminado", olor: "Suave acido", conforme: true, observaciones: "Fermentacion completada" },
+      { dia: 1, fecha: "2026-02-20", ph: 6.0, temperatura: 22, humedadRelativa: 71, aspectoVisual: "Normal", olor: "Neutro", conforme: true, observaciones: "", fotos: [] },
+      { dia: 3, fecha: "2026-02-22", ph: 5.1, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Burbujeo", olor: "Acido", conforme: true, observaciones: "", fotos: [] },
+      { dia: 7, fecha: "2026-02-26", ph: 4.0, temperatura: 21, humedadRelativa: 72, aspectoVisual: "Activo", olor: "Acido lactico", conforme: true, observaciones: "", fotos: [] },
+      { dia: 15, fecha: "2026-03-06", ph: 3.7, temperatura: 20, humedadRelativa: 70, aspectoVisual: "Estable", olor: "Agradable", conforme: true, observaciones: "", fotos: [] },
+      { dia: 30, fecha: "2026-03-21", ph: 3.4, temperatura: 21, humedadRelativa: 69, aspectoVisual: "Clarificado", olor: "Suave", conforme: true, observaciones: "", fotos: [] },
+      { dia: 40, fecha: "2026-03-31", ph: 3.3, temperatura: 21, humedadRelativa: 70, aspectoVisual: "Terminado", olor: "Suave acido", conforme: true, observaciones: "Fermentacion completada", fotos: [] },
     ],
     estado: "completada",
+    fotos: [],
   },
 ];
 
@@ -112,6 +119,7 @@ export const DEMO_PRODUCCIONES: HojaProduccion[] = [
     fermentacionId: "FERM-001",
     estado: "en_proceso",
     observaciones: "Lote de produccion marzo",
+    fotos: [],
   },
 ];
 
@@ -129,6 +137,7 @@ export const DEMO_ENVASADOS: HojaEnvasado[] = [
     unidades: 120,
     estado: "completado",
     observaciones: "",
+    fotos: [],
   },
 ];
 
@@ -254,7 +263,7 @@ export const DEMO_PCCS_COMPLEMENTOS: PCC[] = [
     responsable: "Responsable produccion",
     tipo: "complemento",
     controles: [
-      { id: "CC1-001", pccId: "PCC-C1", fecha: "2026-03-07", valor: "pH 4.1", conforme: true, operario: "Ana Garcia", accionCorrectora: "" },
+      { id: "CC1-001", pccId: "PCC-C1", fecha: "2026-03-07", valor: "pH 4.1", conforme: true, operario: "Ana Garcia", accionCorrectora: "", fotos: [] },
     ],
   },
   {
@@ -353,6 +362,7 @@ export const DEMO_INCIDENCIAS: Incidencia[] = [
     accionCorrectora: "Reparacion compresor. Producto en cuarentena para analisis microbiologico",
     estado: "abierta",
     responsable: "Ana Garcia",
+    fotos: [],
   },
   {
     id: "INC-002",
@@ -363,6 +373,7 @@ export const DEMO_INCIDENCIAS: Incidencia[] = [
     accionCorrectora: "Reclamacion al proveedor. Material retenido hasta recepcion COA",
     estado: "abierta",
     responsable: "Pedro Lopez",
+    fotos: [],
   },
   {
     id: "INC-003",
@@ -374,5 +385,6 @@ export const DEMO_INCIDENCIAS: Incidencia[] = [
     estado: "cerrada",
     fechaCierre: "2026-03-11",
     responsable: "Pedro Lopez",
+    fotos: [],
   },
 ];

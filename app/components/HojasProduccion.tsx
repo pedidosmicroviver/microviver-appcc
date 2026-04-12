@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { HojaProduccion, MateriaPrima, Fermentacion } from "../lib/types";
 import { generateId } from "../lib/storage";
+import PhotoUpload from "./PhotoUpload";
 
 interface HojasProduccionProps {
   data: HojaProduccion[];
@@ -32,6 +33,7 @@ const emptyForm = (): Omit<HojaProduccion, "id"> => ({
   fermentacionId: "",
   estado: "en_proceso",
   observaciones: "",
+  fotos: [],
 });
 
 export default function HojasProduccion({
@@ -204,6 +206,15 @@ export default function HojasProduccion({
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-2">Fotos de produccion</label>
+            <PhotoUpload
+              fotos={form.fotos}
+              onChange={(fotos) => setForm({ ...form, fotos })}
+              folder="produccion"
+            />
+          </div>
+
           <button
             onClick={handleAdd}
             className="w-full py-3 bg-green-600 text-white rounded-xl text-base font-semibold active:bg-green-700"
@@ -267,6 +278,17 @@ export default function HojasProduccion({
                     <p className="text-sm text-gray-600">{hoja.observaciones}</p>
                   </div>
                 )}
+
+                <div>
+                  <h4 className="text-sm font-semibold text-gray-600 mb-2">Fotos de produccion</h4>
+                  <PhotoUpload
+                    fotos={hoja.fotos || []}
+                    onChange={(fotos) =>
+                      onChange(data.map((h) => (h.id === hoja.id ? { ...h, fotos } : h)))
+                    }
+                    folder="produccion"
+                  />
+                </div>
 
                 {hoja.estado === "en_proceso" && (
                   <div className="flex gap-3 pt-2">

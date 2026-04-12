@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { MateriaPrima } from "../lib/types";
 import { generateId } from "../lib/storage";
+import PhotoUpload from "./PhotoUpload";
 
 interface MateriasPrimasProps {
   data: MateriaPrima[];
@@ -19,6 +20,7 @@ const EMPTY_MP: Omit<MateriaPrima, "id"> = {
   unidad: "kg",
   coaPendiente: false,
   notas: "",
+  fotos: [],
 };
 
 function getExpiryStatus(fechaCaducidad: string): "expired" | "warning" | "ok" {
@@ -35,6 +37,7 @@ function getExpiryStatus(fechaCaducidad: string): "expired" | "warning" | "ok" {
 export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<Omit<MateriaPrima, "id">>(EMPTY_MP);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleAdd = () => {
     if (!form.nombre || !form.lote) return;
@@ -46,6 +49,10 @@ export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) 
 
   const handleDelete = (id: string) => {
     onChange(data.filter((mp) => mp.id !== id));
+  };
+
+  const handleUpdateFotos = (id: string, fotos: string[]) => {
+    onChange(data.map((mp) => (mp.id === id ? { ...mp, fotos } : mp)));
   };
 
   return (
@@ -151,6 +158,15 @@ export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) 
               placeholder="Observaciones..."
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Fotos</label>
+            <PhotoUpload
+              fotos={form.fotos || []}
+              onChange={(fotos) => setForm({ ...form, fotos })}
+              folder="materias-primas"
+              maxPhotos={5}
+            />
+          </div>
           <label className="flex items-center gap-3 py-2 cursor-pointer">
             <input
               type="checkbox"
@@ -187,45 +203,101 @@ export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) 
           return (
             <div
               key={mp.id}
-              className={`border rounded-xl p-4 flex items-center justify-between ${rowBg}`}
+              className={`border rounded-xl overflow-hidden ${rowBg}`}
             >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-semibold text-base">{mp.nombre}</span>
-                  {mp.coaPendiente && (
-                    <span className="bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-                      COA Pendiente
+              <div
+                className="p-4 flex items-center justify-between cursor-pointer"
+                onClick={() => setExpandedId(expandedId === mp.id ? null : mp.id)}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-base">{mp.nombre}</span>
+                    {mp.coaPendiente && (
+                      <span className="bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        COA Pendiente
+                      </span>
+                    )}
+                    {status === "expired" && (
+                      <span className="bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        Caducado
+                      </span>
+                    )}
+                    {status === "warning" && (
+                      <span className="bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        Caduca pronto
+                      </span>
+                    )}
+                    {mp.fotos && mp.fotos.length > 0 && (
+                      <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        {mp.fotos.length} foto{mp.fotos.length !== 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1 flex flex-wrap gap-x-4">
+                    <span>Lote: {mp.lote}</span>
+                    <span>Prov: {mp.proveedor}</span>
+                    <span>Cad: {mp.fechaCaducidad}</span>
+                    <span>
+                      {mp.cantidad} {mp.unidad}
                     </span>
-                  )}
-                  {status === "expired" && (
-                    <span className="bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-                      Caducado
-                    </span>
-                  )}
-                  {status === "warning" && (
-                    <span className="bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-                      Caduca pronto
-                    </span>
+                  </div>
+                  {/* Thumbnail row */}
+                  {mp.fotos && mp.fotos.length > 0 && expandedId !== mp.id && (
+                    <div className="flex gap-1.5 mt-2">
+                      {mp.fotos.slice(0, 3).map((url, i) => (
+                        <img
+                          key={i}
+                          src={url}
+                          alt={`Foto ${i + 1}`}
+                          className="w-10 h-10 rounded object-cover border border-gray-300"
+                        />
+                      ))}
+                      {mp.fotos.length > 3 && (
+                        <span className="w-10 h-10 rounded bg-gray-200 border border-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                          +{mp.fotos.length - 3}
+                        </span>
+                      )}
+                    </div>
                   )}
                 </div>
-                <div className="text-sm text-gray-600 mt-1 flex flex-wrap gap-x-4">
-                  <span>Lote: {mp.lote}</span>
-                  <span>Prov: {mp.proveedor}</span>
-                  <span>Cad: {mp.fechaCaducidad}</span>
-                  <span>
-                    {mp.cantidad} {mp.unidad}
+                <div className="flex items-center gap-1 ml-3">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(mp.id);
+                    }}
+                    className="text-red-500 hover:text-red-700 active:text-red-800 p-3 min-h-[48px] min-w-[48px] flex items-center justify-center"
+                    aria-label={`Eliminar ${mp.nombre}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                  <span className="text-gray-400 text-xl">
+                    {expandedId === mp.id ? "\u25B2" : "\u25BC"}
                   </span>
                 </div>
               </div>
-              <button
-                onClick={() => handleDelete(mp.id)}
-                className="ml-3 text-red-500 hover:text-red-700 active:text-red-800 p-3 min-h-[48px] min-w-[48px] flex items-center justify-center"
-                aria-label={`Eliminar ${mp.nombre}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-              </button>
+              {/* Expanded view with PhotoUpload */}
+              {expandedId === mp.id && (
+                <div className="px-4 pb-4 border-t border-gray-100 pt-3 space-y-3">
+                  {mp.notas && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-600 mb-1">Notas</h4>
+                      <p className="text-sm text-gray-600 whitespace-pre-wrap">{mp.notas}</p>
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="text-sm font-semibold text-gray-600 mb-2">Fotos</h4>
+                    <PhotoUpload
+                      fotos={mp.fotos || []}
+                      onChange={(fotos) => handleUpdateFotos(mp.id, fotos)}
+                      folder="materias-primas"
+                      maxPhotos={5}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}
