@@ -132,12 +132,13 @@ export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) 
                   step="0.01"
                 />
               </div>
-              <div className="w-28">
+              <div className="w-32">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
                 <select
                   value={form.unidad}
                   onChange={(e) => setForm({ ...form, unidad: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px] bg-white"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px] bg-white appearance-auto cursor-pointer"
+                  style={{ WebkitAppearance: "menulist", userSelect: "text" }}
                 >
                   <option value="kg">kg</option>
                   <option value="g">g</option>

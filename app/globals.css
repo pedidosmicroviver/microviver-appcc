@@ -32,7 +32,15 @@ body {
 /* iPad optimizations */
 input, select, textarea {
   font-size: 16px !important;
-  user-select: text;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* Ensure select dropdowns work on iPad */
+select {
+  -webkit-appearance: menulist !important;
+  appearance: auto !important;
+  cursor: pointer;
 }
 
 /* Scrollbar styling */
