@@ -208,9 +208,9 @@ export default function Home() {
       <Sidebar activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as TabId)} />
 
       {/* Main content */}
-      <div className="flex-1 ml-56 flex flex-col h-screen overflow-hidden">
-        {/* Header */}
-        <header className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+      <div className="flex-1 md:ml-56 flex flex-col h-screen overflow-hidden pt-14 md:pt-0">
+        {/* Header - hidden on mobile (mobile has top bar) */}
+        <header className="hidden md:block bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-slate-800">
@@ -236,7 +236,7 @@ export default function Home() {
         </header>
 
         {/* Scrollable content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
           <div className="max-w-5xl mx-auto">
             {activeTab === "dashboard" && (
               <Dashboard
