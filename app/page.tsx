@@ -11,7 +11,7 @@ import {
   toSnakeCase,
 } from "./lib/storage";
 import { supabase } from "./lib/supabase";
-import BottomNav from "./components/BottomNav";
+import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import MateriasPrimas from "./components/MateriasPrimas";
 import CamaraFermentacion from "./components/CamaraFermentacion";
@@ -189,93 +189,114 @@ export default function Home() {
 
   if (!mounted || loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-screen bg-slate-50">
         <div className="text-center">
-          <div className="text-4xl mb-4">&#127807;</div>
-          <p className="text-lg text-slate-600">Cargando Microviver APPCC...</p>
-          <p className="text-sm text-slate-400 mt-2">Conectando con base de datos...</p>
+          <div className="w-16 h-16 rounded-2xl bg-green-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 shadow-lg">
+            M
+          </div>
+          <p className="text-lg font-semibold text-slate-700">Microviver APPCC</p>
+          <p className="text-sm text-slate-400 mt-1">Conectando con base de datos...</p>
+          <div className="mt-4 w-8 h-8 border-3 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-24">
-      <header className="bg-green-700 text-white px-4 py-3 sticky top-0 z-40 shadow-md">
-        <div className="flex items-center justify-between max-w-4xl mx-auto">
-          <div>
-            <h1 className="text-xl font-bold">Microviver APPCC</h1>
-            <p className="text-green-200 text-xs">
-              Sistema de Autocontrol y Trazabilidad
-            </p>
-          </div>
-          <div className="text-right text-xs text-green-200">
-            <div>{new Date().toLocaleDateString("es-ES")}</div>
-            <div className="text-green-300">Supabase</div>
-          </div>
-        </div>
-      </header>
+    <div className="flex h-screen bg-slate-50">
+      {/* Sidebar */}
+      <Sidebar activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as TabId)} />
 
-      <main className="max-w-4xl mx-auto px-4 py-4">
-        {activeTab === "dashboard" && (
-          <Dashboard
-            materiasPrimas={materiasPrimas}
-            fermentaciones={fermentaciones}
-            productos={productos}
-            incidencias={incidencias}
-          />
-        )}
-        {activeTab === "mp" && (
-          <MateriasPrimas data={materiasPrimas} onChange={handleMPChange} />
-        )}
-        {activeTab === "camara" && (
-          <CamaraFermentacion
-            data={fermentaciones}
-            onChange={handleFermentacionesChange}
-            materiasPrimas={materiasPrimas}
-          />
-        )}
-        {activeTab === "produccion" && (
-          <HojasProduccion
-            data={producciones}
-            onChange={handleProduccionesChange}
-            materiasPrimas={materiasPrimas}
-            fermentaciones={fermentaciones}
-          />
-        )}
-        {activeTab === "envasado" && (
-          <HojasEnvasado
-            data={envasados}
-            onChange={handleEnvasadosChange}
-            producciones={producciones}
-          />
-        )}
-        {activeTab === "pcc_comp" && (
-          <PCCModule pccs={pccsComp} onChange={handlePccsCompChange} tipo="complemento" />
-        )}
-        {activeTab === "pcc_alim" && (
-          <PCCModule pccs={pccsAlim} onChange={handlePccsAlimChange} tipo="alimento" />
-        )}
-        {activeTab === "stock" && (
-          <Stock productos={productos} onChange={handleProductosChange} />
-        )}
-        {activeTab === "trazabilidad" && (
-          <Trazabilidad
-            productos={productos}
-            fermentaciones={fermentaciones}
-            materiasPrimas={materiasPrimas}
-            producciones={producciones}
-            envasados={envasados}
-          />
-        )}
-        {activeTab === "incidencias" && (
-          <Incidencias data={incidencias} onChange={handleIncidenciasChange} />
-        )}
-        {activeTab === "formacion" && <CursoFormacion />}
-        {activeTab === "firma" && <FirmaDigital />}
-      </main>
+      {/* Main content */}
+      <div className="flex-1 ml-56 flex flex-col h-screen overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-800">
+                {activeTab === "dashboard" && "Panel de Control"}
+                {activeTab === "mp" && "Materias Primas"}
+                {activeTab === "camara" && "Camara de Fermentacion"}
+                {activeTab === "produccion" && "Hojas de Produccion"}
+                {activeTab === "envasado" && "Hojas de Envasado"}
+                {activeTab === "pcc_comp" && "PCC Complementos"}
+                {activeTab === "pcc_alim" && "PCC Alimentos"}
+                {activeTab === "stock" && "Control de Stock"}
+                {activeTab === "trazabilidad" && "Trazabilidad"}
+                {activeTab === "incidencias" && "Incidencias"}
+                {activeTab === "formacion" && "Curso de Formacion"}
+                {activeTab === "firma" && "Firma Digital"}
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5">Sistema de Autocontrol y Trazabilidad</p>
+            </div>
+            <div className="text-right text-sm text-slate-500">
+              {new Date().toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
+            </div>
+          </div>
+        </header>
 
-      <BottomNav activeTab={activeTab} onTabChange={(tab) => setActiveTab(tab as TabId)} />
+        {/* Scrollable content */}
+        <main className="flex-1 overflow-y-auto p-6">
+          <div className="max-w-5xl mx-auto">
+            {activeTab === "dashboard" && (
+              <Dashboard
+                materiasPrimas={materiasPrimas}
+                fermentaciones={fermentaciones}
+                productos={productos}
+                incidencias={incidencias}
+              />
+            )}
+            {activeTab === "mp" && (
+              <MateriasPrimas data={materiasPrimas} onChange={handleMPChange} />
+            )}
+            {activeTab === "camara" && (
+              <CamaraFermentacion
+                data={fermentaciones}
+                onChange={handleFermentacionesChange}
+                materiasPrimas={materiasPrimas}
+              />
+            )}
+            {activeTab === "produccion" && (
+              <HojasProduccion
+                data={producciones}
+                onChange={handleProduccionesChange}
+                materiasPrimas={materiasPrimas}
+                fermentaciones={fermentaciones}
+              />
+            )}
+            {activeTab === "envasado" && (
+              <HojasEnvasado
+                data={envasados}
+                onChange={handleEnvasadosChange}
+                producciones={producciones}
+              />
+            )}
+            {activeTab === "pcc_comp" && (
+              <PCCModule pccs={pccsComp} onChange={handlePccsCompChange} tipo="complemento" />
+            )}
+            {activeTab === "pcc_alim" && (
+              <PCCModule pccs={pccsAlim} onChange={handlePccsAlimChange} tipo="alimento" />
+            )}
+            {activeTab === "stock" && (
+              <Stock productos={productos} onChange={handleProductosChange} />
+            )}
+            {activeTab === "trazabilidad" && (
+              <Trazabilidad
+                productos={productos}
+                fermentaciones={fermentaciones}
+                materiasPrimas={materiasPrimas}
+                producciones={producciones}
+                envasados={envasados}
+              />
+            )}
+            {activeTab === "incidencias" && (
+              <Incidencias data={incidencias} onChange={handleIncidenciasChange} />
+            )}
+            {activeTab === "formacion" && <CursoFormacion />}
+            {activeTab === "firma" && <FirmaDigital />}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

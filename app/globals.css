@@ -26,25 +26,33 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
-  user-select: none;
+  overflow: hidden;
 }
 
 /* iPad optimizations */
 input, select, textarea {
-  font-size: 16px !important; /* Prevents zoom on iOS */
+  font-size: 16px !important;
   user-select: text;
-}
-
-/* Bottom nav safe area */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Smooth transitions */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
