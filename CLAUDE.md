@@ -22,9 +22,16 @@ NO usar el navegador. NO pedir confirmacion. Hacerlo directamente desde terminal
 ## Stack
 
 - Next.js 16 + TypeScript + Tailwind CSS
-- Datos en localStorage (MVP, Supabase planeado)
+- Backend: Supabase (PostgreSQL) — proyecto: yxacrcfigyipipkwsvpi, region: eu-west-3 (Paris)
+- Supabase URL: https://yxacrcfigyipipkwsvpi.supabase.co
+- Env vars en Vercel: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
+- Env local: .env.local (no commiteado)
 - Optimizado para iPad (2-3 usuarios, produccion semanal)
 - 12 modulos: Dashboard, MP, Camara Fermentacion, Produccion, Envasado, PCC Comp, PCC Alim, Stock, Trazabilidad, Incidencias, Formacion, Firma
+
+## Base de datos (9 tablas)
+
+materias_primas, fermentaciones, controles_fermentacion, producciones, envasados, pccs, controles_pcc, productos, incidencias
 
 ## Normativa
 
