@@ -10,6 +10,8 @@ import type {
   ProductoStock,
   Incidencia,
   HojaProduccion,
+  PlanLimpieza,
+  RegistroLimpieza,
   HojaEnvasado,
 } from "./types";
 
@@ -246,4 +248,48 @@ export async function savePCCControl(control: object): Promise<void> {
     console.error("Error saving control PCC:", error);
     throw error;
   }
+}
+
+// --- Limpieza: load plans with nested registros ---
+
+export async function loadLimpieza(): Promise<PlanLimpieza[]> {
+  const { data: planes, error } = await supabase
+    .from("planes_limpieza")
+    .select("*")
+    .order("zona", { ascending: true });
+
+  if (error) {
+    console.error("Error loading planes_limpieza:", error);
+    return [];
+  }
+
+  if (!planes || planes.length === 0) return [];
+
+  const ids = planes.map((p) => p.id);
+
+  const { data: registros, error: regError } = await supabase
+    .from("registros_limpieza")
+    .select("*")
+    .in("plan_id", ids)
+    .order("fecha", { ascending: false });
+
+  if (regError) {
+    console.error("Error loading registros_limpieza:", regError);
+  }
+
+  const registrosByPlan = new Map<string, RegistroLimpieza[]>();
+  for (const reg of registros ?? []) {
+    const planId = reg.plan_id;
+    const camelReg = toCamelCase(reg as Record<string, unknown>) as unknown as RegistroLimpieza;
+    if (!registrosByPlan.has(planId)) {
+      registrosByPlan.set(planId, []);
+    }
+    registrosByPlan.get(planId)!.push(camelReg);
+  }
+
+  return planes.map((p) => {
+    const camelP = toCamelCase(p as Record<string, unknown>) as unknown as PlanLimpieza;
+    camelP.registros = registrosByPlan.get(p.id) ?? [];
+    return camelP;
+  });
 }

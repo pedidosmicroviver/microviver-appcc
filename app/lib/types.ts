@@ -115,16 +115,53 @@ export interface Incidencia {
   fotos: string[];
 }
 
+export interface Envase {
+  id: string;
+  tipo: string;
+  descripcion: string;
+  lote: string;
+  cantidad: number;
+  unidad: string;
+  fechaRecepcion: string;
+  proveedor: string;
+  notas: string;
+  fotos: string[];
+}
+
+export interface PlanLimpieza {
+  id: string;
+  zona: string;
+  equipo: string;
+  productoLimpieza: string;
+  frecuencia: "diaria" | "semanal" | "mensual";
+  responsable: string;
+  instrucciones: string;
+  activo: boolean;
+  registros: RegistroLimpieza[];
+}
+
+export interface RegistroLimpieza {
+  id: string;
+  planId: string;
+  fecha: string;
+  operario: string;
+  conforme: boolean;
+  observaciones: string;
+  fotos: string[];
+}
+
 export type TabId =
   | "dashboard"
   | "mp"
   | "camara"
   | "produccion"
   | "envasado"
+  | "envases"
   | "pcc_comp"
   | "pcc_alim"
   | "stock"
   | "trazabilidad"
   | "incidencias"
+  | "limpieza"
   | "formacion"
   | "firma";

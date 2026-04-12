@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { TabId, MateriaPrima, Fermentacion, ProductoStock, PCC, Incidencia, HojaProduccion, HojaEnvasado } from "./lib/types";
+import { TabId, MateriaPrima, Fermentacion, ProductoStock, PCC, Incidencia, HojaProduccion, HojaEnvasado, Envase, PlanLimpieza } from "./lib/types";
 import {
   loadFromSupabase,
   loadFermentaciones,
   loadPCCs,
+  loadLimpieza,
   saveToSupabase,
   deleteFromSupabase,
   toSnakeCase,
@@ -21,6 +22,8 @@ import PCCModule from "./components/PCCModule";
 import Stock from "./components/Stock";
 import Trazabilidad from "./components/Trazabilidad";
 import Incidencias from "./components/Incidencias";
+import EnvasesComponent from "./components/Envases";
+import Limpieza from "./components/Limpieza";
 import CursoFormacion from "./components/CursoFormacion";
 import FirmaDigital from "./components/FirmaDigital";
 
@@ -37,10 +40,12 @@ export default function Home() {
   const [incidencias, setIncidencias] = useState<Incidencia[]>([]);
   const [producciones, setProducciones] = useState<HojaProduccion[]>([]);
   const [envasados, setEnvasados] = useState<HojaEnvasado[]>([]);
+  const [envases, setEnvases] = useState<Envase[]>([]);
+  const [planesLimpieza, setPlanesLimpieza] = useState<PlanLimpieza[]>([]);
 
   const loadAllData = useCallback(async () => {
     try {
-      const [mp, ferm, prod, pccC, pccA, inc, prods, envs] = await Promise.all([
+      const [mp, ferm, prod, pccC, pccA, inc, prods, envs, envasesData, limpData] = await Promise.all([
         loadFromSupabase<MateriaPrima>("materias_primas", { orderBy: "created_at" }),
         loadFermentaciones(),
         loadFromSupabase<ProductoStock>("productos", { orderBy: "nombre" }),
@@ -49,6 +54,8 @@ export default function Home() {
         loadFromSupabase<Incidencia>("incidencias", { orderBy: "fecha" }),
         loadFromSupabase<HojaProduccion>("producciones", { orderBy: "fecha" }),
         loadFromSupabase<HojaEnvasado>("envasados", { orderBy: "fecha" }),
+        loadFromSupabase<Envase>("envases", { orderBy: "created_at" }),
+        loadLimpieza(),
       ]);
       setMateriasPrimas(mp);
       setFermentaciones(ferm);
@@ -58,6 +65,8 @@ export default function Home() {
       setIncidencias(inc);
       setProducciones(prods);
       setEnvasados(envs);
+      setEnvases(envasesData);
+      setPlanesLimpieza(limpData);
     } catch (e) {
       console.error("Error loading data:", e);
     } finally {
@@ -187,6 +196,33 @@ export default function Home() {
     await syncArray("envasados", newData as unknown as Record<string, unknown>[], old as unknown as Record<string, unknown>[]);
   }, [envasados, syncArray]);
 
+  const handleEnvasesChange = useCallback(async (newData: Envase[]) => {
+    const old = envases;
+    setEnvases(newData);
+    await syncArray("envases", newData as unknown as Record<string, unknown>[], old as unknown as Record<string, unknown>[]);
+  }, [envases, syncArray]);
+
+  const handleLimpiezaChange = useCallback(async (newData: PlanLimpieza[]) => {
+    const old = planesLimpieza;
+    setPlanesLimpieza(newData);
+    // Sync planes (without registros)
+    const newIds = new Set(newData.map(d => d.id));
+    const deleted = old.filter(d => !newIds.has(d.id));
+    for (const item of deleted) {
+      await deleteFromSupabase("planes_limpieza", item.id);
+    }
+    for (const item of newData) {
+      const { registros, ...rest } = item;
+      await saveToSupabase("planes_limpieza", rest as unknown as Record<string, unknown>);
+      if (registros) {
+        for (const reg of registros) {
+          const snakeReg = toSnakeCase({ ...reg, planId: item.id } as unknown as Record<string, unknown>);
+          await supabase.from("registros_limpieza").upsert(snakeReg);
+        }
+      }
+    }
+  }, [planesLimpieza]);
+
   if (!mounted || loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -224,6 +260,8 @@ export default function Home() {
                 {activeTab === "stock" && "Control de Stock"}
                 {activeTab === "trazabilidad" && "Trazabilidad"}
                 {activeTab === "incidencias" && "Incidencias"}
+                {activeTab === "envases" && "Envases y Material de Envasado"}
+                {activeTab === "limpieza" && "Limpieza y Desinfeccion"}
                 {activeTab === "formacion" && "Curso de Formacion"}
                 {activeTab === "firma" && "Firma Digital"}
               </h2>
@@ -291,6 +329,12 @@ export default function Home() {
             )}
             {activeTab === "incidencias" && (
               <Incidencias data={incidencias} onChange={handleIncidenciasChange} />
+            )}
+            {activeTab === "envases" && (
+              <EnvasesComponent data={envases} onChange={handleEnvasesChange} />
+            )}
+            {activeTab === "limpieza" && (
+              <Limpieza data={planesLimpieza} onChange={handleLimpiezaChange} />
             )}
             {activeTab === "formacion" && <CursoFormacion />}
             {activeTab === "firma" && <FirmaDigital />}

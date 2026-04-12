@@ -23,6 +23,7 @@ const navGroups: {
       { id: "camara", label: "Fermentacion", icon: "🧫" },
       { id: "produccion", label: "Produccion", icon: "⚗️" },
       { id: "envasado", label: "Envasado", icon: "🏷️" },
+      { id: "envases", label: "Envases", icon: "🫙" },
     ],
   },
   {
@@ -33,6 +34,7 @@ const navGroups: {
       { id: "stock", label: "Stock", icon: "📋" },
       { id: "trazabilidad", label: "Trazabilidad", icon: "🔗" },
       { id: "incidencias", label: "Incidencias", icon: "⚠️" },
+      { id: "limpieza", label: "Limpieza y Desinf.", icon: "🧹" },
     ],
   },
   {
