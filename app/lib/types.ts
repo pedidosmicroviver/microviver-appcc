@@ -34,6 +34,12 @@ export interface Fermentacion {
   controles: ControlFermentacion[];
   estado: "activa" | "completada" | "rechazada";
   fotos: string[];
+  // Nuevos campos para doble fermentacion
+  fase: "primaria" | "secundaria";
+  temperaturaObjetivo: number;    // 30C primaria, 35C secundaria
+  duracionDias: number;           // 40 dias por defecto
+  linea: "liquidos" | "solidos_ferm" | "solidos_no_ferm" | "alimentos";
+  fermentacionPrimariaId: string; // link a la primaria si es secundaria
 }
 
 export interface HojaProduccion {
@@ -150,6 +156,80 @@ export interface RegistroLimpieza {
   fotos: string[];
 }
 
+// Stock intermedio (bidones, garrafas, botes)
+export interface StockIntermedio {
+  id: string;
+  producto: string;
+  lote: string;
+  formato: "bidon_30l" | "bidon_60l" | "bidon_120l" | "garrafa_20l" | "bote_125ml" | "bote_250ml" | "bote_500ml";
+  cantidad: number;
+  unidad: string;
+  origenId: string;
+  origenTipo: string;
+  fecha: string;
+  estado: "en_almacen" | "en_proceso" | "agotado";
+  notas: string;
+  fotos: string[];
+}
+
+// Verificacion semanal (Registro 18)
+export interface VerificacionSemanal {
+  id: string;
+  fecha: string;
+  responsable: string;
+  firma: string;
+  // Agua
+  aguaPh: string;
+  aguaCloro: string;
+  aguaOrganoleptico: string;
+  // Zonas: C (correcto) / I (incorrecto) / "" (no aplica)
+  recepcionLd: string;
+  recepcionPlagas: string;
+  recepcionManto: string;
+  almacenMpLd: string;
+  almacenMpPlagas: string;
+  almacenMpManto: string;
+  almacenEnvasesLd: string;
+  almacenEnvasesPlayas: string;
+  almacenEnvasesManto: string;
+  salaFermentacionLd: string;
+  salaFermentacionPlagas: string;
+  salaFermentacionManto: string;
+  areaEnvasadoLd: string;
+  areaEnvasadoPlagas: string;
+  areaEnvasadoManto: string;
+  almacenPtLd: string;
+  almacenPtPlagas: string;
+  almacenPtManto: string;
+  // Incidencias
+  incidenciasLd: string;
+  incidenciasPlagas: string;
+  incidenciasManto: string;
+  accionesCorrectoras: string;
+  fotos: string[];
+}
+
+// Proveedor (Registro 16)
+export interface Proveedor {
+  id: string;
+  codigo: string;
+  nombre: string;
+  cif: string;
+  poblacion: string;
+  direccion: string;
+  contacto: string;
+  telefono: string;
+  email: string;
+  productosSubministrados: string;
+  categoria: "A" | "B" | "C" | "D";
+  estado: "aprobado" | "provisional" | "suspendido" | "alerta";
+  incidenciasAnuales: number;
+  calificacionAnual: string;
+  fechaUltimaEvaluacion?: string;
+  observaciones: string;
+  fotos: string[];
+}
+
 export type TabId =
   | "dashboard"
   | "mp"
@@ -160,8 +240,11 @@ export type TabId =
   | "pcc_comp"
   | "pcc_alim"
   | "stock"
+  | "stock_intermedio"
   | "trazabilidad"
   | "incidencias"
   | "limpieza"
+  | "verificacion"
+  | "proveedores"
   | "formacion"
   | "firma";

@@ -24,6 +24,7 @@ const navGroups: {
       { id: "produccion", label: "Produccion", icon: "⚗️" },
       { id: "envasado", label: "Envasado", icon: "🏷️" },
       { id: "envases", label: "Envases", icon: "🫙" },
+      { id: "stock_intermedio", label: "Stock Intermedio", icon: "🛢️" },
     ],
   },
   {
@@ -35,6 +36,13 @@ const navGroups: {
       { id: "trazabilidad", label: "Trazabilidad", icon: "🔗" },
       { id: "incidencias", label: "Incidencias", icon: "⚠️" },
       { id: "limpieza", label: "Limpieza y Desinf.", icon: "🧹" },
+      { id: "verificacion", label: "Verif. Semanal", icon: "✅" },
+    ],
+  },
+  {
+    label: "Proveedores",
+    tabs: [
+      { id: "proveedores", label: "Proveedores", icon: "🏭" },
     ],
   },
   {

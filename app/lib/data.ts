@@ -84,6 +84,11 @@ export const DEMO_FERMENTACIONES: Fermentacion[] = [
     ],
     estado: "activa",
     fotos: [],
+    fase: "primaria",
+    temperaturaObjetivo: 30,
+    duracionDias: 40,
+    linea: "liquidos",
+    fermentacionPrimariaId: "",
   },
   {
     id: "FERM-002",
@@ -101,6 +106,11 @@ export const DEMO_FERMENTACIONES: Fermentacion[] = [
     ],
     estado: "completada",
     fotos: [],
+    fase: "primaria",
+    temperaturaObjetivo: 30,
+    duracionDias: 40,
+    linea: "liquidos",
+    fermentacionPrimariaId: "",
   },
 ];
 

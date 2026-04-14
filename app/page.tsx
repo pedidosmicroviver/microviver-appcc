@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { TabId, MateriaPrima, Fermentacion, ProductoStock, PCC, Incidencia, HojaProduccion, HojaEnvasado, Envase, PlanLimpieza } from "./lib/types";
+import { TabId, MateriaPrima, Fermentacion, ProductoStock, PCC, Incidencia, HojaProduccion, HojaEnvasado, Envase, PlanLimpieza, StockIntermedio, VerificacionSemanal, Proveedor } from "./lib/types";
 import {
   loadFromSupabase,
   loadFermentaciones,
@@ -24,6 +24,9 @@ import Trazabilidad from "./components/Trazabilidad";
 import Incidencias from "./components/Incidencias";
 import EnvasesComponent from "./components/Envases";
 import Limpieza from "./components/Limpieza";
+import StockIntermedioComponent from "./components/StockIntermedio";
+import VerificacionSemanalComponent from "./components/VerificacionSemanal";
+import ProveedoresComponent from "./components/Proveedores";
 import CursoFormacion from "./components/CursoFormacion";
 import FirmaDigital from "./components/FirmaDigital";
 
@@ -42,10 +45,13 @@ export default function Home() {
   const [envasados, setEnvasados] = useState<HojaEnvasado[]>([]);
   const [envases, setEnvases] = useState<Envase[]>([]);
   const [planesLimpieza, setPlanesLimpieza] = useState<PlanLimpieza[]>([]);
+  const [stockIntermedio, setStockIntermedio] = useState<StockIntermedio[]>([]);
+  const [verificaciones, setVerificaciones] = useState<VerificacionSemanal[]>([]);
+  const [proveedoresData, setProveedoresData] = useState<Proveedor[]>([]);
 
   const loadAllData = useCallback(async () => {
     try {
-      const [mp, ferm, prod, pccC, pccA, inc, prods, envs, envasesData, limpData] = await Promise.all([
+      const results = await Promise.all([
         loadFromSupabase<MateriaPrima>("materias_primas", { orderBy: "created_at" }),
         loadFermentaciones(),
         loadFromSupabase<ProductoStock>("productos", { orderBy: "nombre" }),
@@ -56,17 +62,23 @@ export default function Home() {
         loadFromSupabase<HojaEnvasado>("envasados", { orderBy: "fecha" }),
         loadFromSupabase<Envase>("envases", { orderBy: "created_at" }),
         loadLimpieza(),
+        loadFromSupabase<StockIntermedio>("stock_intermedio", { orderBy: "created_at" }),
+        loadFromSupabase<VerificacionSemanal>("verificaciones_semanales", { orderBy: "fecha" }),
+        loadFromSupabase<Proveedor>("proveedores", { orderBy: "nombre" }),
       ]);
-      setMateriasPrimas(mp);
-      setFermentaciones(ferm);
-      setProductos(prod);
-      setPccsComp(pccC);
-      setPccsAlim(pccA);
-      setIncidencias(inc);
-      setProducciones(prods);
-      setEnvasados(envs);
-      setEnvases(envasesData);
-      setPlanesLimpieza(limpData);
+      setMateriasPrimas(results[0] as MateriaPrima[]);
+      setFermentaciones(results[1] as Fermentacion[]);
+      setProductos(results[2] as ProductoStock[]);
+      setPccsComp(results[3] as PCC[]);
+      setPccsAlim(results[4] as PCC[]);
+      setIncidencias(results[5] as Incidencia[]);
+      setProducciones(results[6] as HojaProduccion[]);
+      setEnvasados(results[7] as HojaEnvasado[]);
+      setEnvases(results[8] as Envase[]);
+      setPlanesLimpieza(results[9] as PlanLimpieza[]);
+      setStockIntermedio(results[10] as StockIntermedio[]);
+      setVerificaciones(results[11] as VerificacionSemanal[]);
+      setProveedoresData(results[12] as Proveedor[]);
     } catch (e) {
       console.error("Error loading data:", e);
     } finally {
@@ -223,6 +235,24 @@ export default function Home() {
     }
   }, [planesLimpieza]);
 
+  const handleStockIntermedioChange = useCallback(async (newData: StockIntermedio[]) => {
+    const old = stockIntermedio;
+    setStockIntermedio(newData);
+    await syncArray("stock_intermedio", newData as unknown as Record<string, unknown>[], old as unknown as Record<string, unknown>[]);
+  }, [stockIntermedio, syncArray]);
+
+  const handleVerificacionesChange = useCallback(async (newData: VerificacionSemanal[]) => {
+    const old = verificaciones;
+    setVerificaciones(newData);
+    await syncArray("verificaciones_semanales", newData as unknown as Record<string, unknown>[], old as unknown as Record<string, unknown>[]);
+  }, [verificaciones, syncArray]);
+
+  const handleProveedoresChange = useCallback(async (newData: Proveedor[]) => {
+    const old = proveedoresData;
+    setProveedoresData(newData);
+    await syncArray("proveedores", newData as unknown as Record<string, unknown>[], old as unknown as Record<string, unknown>[]);
+  }, [proveedoresData, syncArray]);
+
   if (!mounted || loading) {
     return (
       <div className="flex items-center justify-center h-screen bg-slate-50">
@@ -261,7 +291,10 @@ export default function Home() {
                 {activeTab === "trazabilidad" && "Trazabilidad"}
                 {activeTab === "incidencias" && "Incidencias"}
                 {activeTab === "envases" && "Envases y Material de Envasado"}
+                {activeTab === "stock_intermedio" && "Stock Intermedio"}
                 {activeTab === "limpieza" && "Limpieza y Desinfeccion"}
+                {activeTab === "verificacion" && "Verificacion Semanal"}
+                {activeTab === "proveedores" && "Control de Proveedores"}
                 {activeTab === "formacion" && "Curso de Formacion"}
                 {activeTab === "firma" && "Firma Digital"}
               </h2>
@@ -335,6 +368,15 @@ export default function Home() {
             )}
             {activeTab === "limpieza" && (
               <Limpieza data={planesLimpieza} onChange={handleLimpiezaChange} />
+            )}
+            {activeTab === "stock_intermedio" && (
+              <StockIntermedioComponent data={stockIntermedio} onChange={handleStockIntermedioChange} />
+            )}
+            {activeTab === "verificacion" && (
+              <VerificacionSemanalComponent data={verificaciones} onChange={handleVerificacionesChange} />
+            )}
+            {activeTab === "proveedores" && (
+              <ProveedoresComponent data={proveedoresData} onChange={handleProveedoresChange} />
             )}
             {activeTab === "formacion" && <CursoFormacion />}
             {activeTab === "firma" && <FirmaDigital />}

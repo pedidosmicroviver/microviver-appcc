@@ -31,6 +31,11 @@ interface NewFermentForm {
   loteProduccion: string;
   fechaInicio: string;
   selectedMPs: string[];
+  fase: "primaria" | "secundaria";
+  linea: "liquidos" | "solidos_ferm" | "solidos_no_ferm" | "alimentos";
+  temperaturaObjetivo: number;
+  duracionDias: number;
+  fermentacionPrimariaId: string;
 }
 
 const EMPTY_FERM_FORM: NewFermentForm = {
@@ -38,14 +43,19 @@ const EMPTY_FERM_FORM: NewFermentForm = {
   loteProduccion: "",
   fechaInicio: "",
   selectedMPs: [],
+  fase: "primaria",
+  linea: "liquidos",
+  temperaturaObjetivo: 30,
+  duracionDias: 40,
+  fermentacionPrimariaId: "",
 };
 
-function daysElapsed(fechaInicio: string): number {
+function daysElapsed(fechaInicio: string, duracion: number = TOTAL_DAYS): number {
   if (!fechaInicio) return 0;
   const start = new Date(fechaInicio);
   const now = new Date();
   const diff = Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-  return Math.max(0, Math.min(diff, TOTAL_DAYS));
+  return Math.max(0, Math.min(diff, duracion));
 }
 
 function getControlDotColor(
@@ -111,6 +121,11 @@ export default function CamaraFermentacion({
       controles: [],
       estado: "activa",
       fotos: fermFormFotos,
+      fase: fermForm.fase,
+      temperaturaObjetivo: fermForm.temperaturaObjetivo,
+      duracionDias: fermForm.duracionDias,
+      linea: fermForm.linea,
+      fermentacionPrimariaId: fermForm.fermentacionPrimariaId,
     };
     onChange([...data, newFerm]);
     setFermForm(EMPTY_FERM_FORM);
@@ -153,10 +168,13 @@ export default function CamaraFermentacion({
         </button>
       </div>
 
-      {/* Reference limits */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800">
-        <span className="font-semibold">Limites de referencia:</span>{" "}
-        pH &le; 4.6 (dia 7) &bull; Temp 18-24 C &bull; HR 60-80%
+      {/* Reference limits - dynamic based on active fermentations */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-800 space-y-1">
+        <span className="font-semibold">Limites de referencia:</span>
+        <div className="flex flex-col gap-0.5 mt-1">
+          <span>Primaria: Temp objetivo: 30C &bull; pH objetivo final: 3.3-3.8 &bull; Duracion: 40 dias</span>
+          <span>Secundaria: Temp objetivo: 35C &bull; pH objetivo final: 3.3-3.8 &bull; Duracion: 40 dias</span>
+        </div>
       </div>
 
       {/* New Fermentation Form */}
@@ -193,7 +211,78 @@ export default function CamaraFermentacion({
                 className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fase *</label>
+              <select
+                value={fermForm.fase}
+                onChange={(e) => {
+                  const fase = e.target.value as "primaria" | "secundaria";
+                  setFermForm({
+                    ...fermForm,
+                    fase,
+                    temperaturaObjetivo: fase === "primaria" ? 30 : 35,
+                    fermentacionPrimariaId: fase === "primaria" ? "" : fermForm.fermentacionPrimariaId,
+                  });
+                }}
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
+              >
+                <option value="primaria">Primaria</option>
+                <option value="secundaria">Secundaria</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Linea *</label>
+              <select
+                value={fermForm.linea}
+                onChange={(e) => setFermForm({ ...fermForm, linea: e.target.value as NewFermentForm["linea"] })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
+              >
+                <option value="liquidos">Liquidos fermentados</option>
+                <option value="solidos_ferm">Solidos fermentados</option>
+                <option value="solidos_no_ferm">Solidos no fermentados</option>
+                <option value="alimentos">Alimentos fermentados</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Temp. Objetivo (C)</label>
+              <input
+                type="number"
+                value={fermForm.temperaturaObjetivo}
+                onChange={(e) => setFermForm({ ...fermForm, temperaturaObjetivo: parseFloat(e.target.value) || 30 })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
+                step="1"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Duracion (dias)</label>
+              <input
+                type="number"
+                value={fermForm.duracionDias}
+                onChange={(e) => setFermForm({ ...fermForm, duracionDias: parseInt(e.target.value) || 40 })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
+                min="1"
+              />
+            </div>
           </div>
+          {fermForm.fase === "secundaria" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fermentacion Primaria de origen *</label>
+              <select
+                value={fermForm.fermentacionPrimariaId}
+                onChange={(e) => setFermForm({ ...fermForm, fermentacionPrimariaId: e.target.value })}
+                className="w-full border border-gray-300 rounded-lg px-3 py-3 text-base min-h-[48px]"
+              >
+                <option value="">-- Seleccionar primaria --</option>
+                {data
+                  .filter((f) => f.fase === "primaria" && f.estado === "completada")
+                  .map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.producto} - Lote: {f.loteProduccion} ({f.fechaInicio})
+                    </option>
+                  ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Materias Primas ({fermForm.selectedMPs.length} seleccionadas)
@@ -246,8 +335,9 @@ export default function CamaraFermentacion({
       {/* Fermentation List */}
       <div className="space-y-3">
         {data.map((ferm) => {
-          const elapsed = daysElapsed(ferm.fechaInicio);
-          const progress = Math.min((elapsed / TOTAL_DAYS) * 100, 100);
+          const fermDuration = ferm.duracionDias || TOTAL_DAYS;
+          const elapsed = daysElapsed(ferm.fechaInicio, fermDuration);
+          const progress = Math.min((elapsed / fermDuration) * 100, 100);
           const isExpanded = expandedId === ferm.id;
           const criticalPh = hasCriticalPhAlert(ferm.controles);
 
@@ -265,6 +355,23 @@ export default function CamaraFermentacion({
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold text-base">{ferm.producto}</span>
                     {estadoBadge(ferm.estado)}
+                    {ferm.fase === "primaria" ? (
+                      <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full">Primaria</span>
+                    ) : (
+                      <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-2.5 py-1 rounded-full">Secundaria</span>
+                    )}
+                    {ferm.linea === "liquidos" && (
+                      <span className="bg-blue-50 text-blue-600 text-xs font-medium px-2 py-0.5 rounded-full">Liquidos</span>
+                    )}
+                    {ferm.linea === "solidos_ferm" && (
+                      <span className="bg-amber-50 text-amber-600 text-xs font-medium px-2 py-0.5 rounded-full">Solidos ferm</span>
+                    )}
+                    {ferm.linea === "solidos_no_ferm" && (
+                      <span className="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-0.5 rounded-full">Solidos no ferm</span>
+                    )}
+                    {ferm.linea === "alimentos" && (
+                      <span className="bg-green-50 text-green-600 text-xs font-medium px-2 py-0.5 rounded-full">Alimentos</span>
+                    )}
                     {criticalPh && (
                       <span className="bg-red-600 text-white text-xs font-bold px-2.5 py-1 rounded-full animate-pulse">
                         pH CRITICO
@@ -283,7 +390,13 @@ export default function CamaraFermentacion({
                   </svg>
                 </div>
                 <div className="text-sm text-gray-600 mb-2">
-                  Lote: {ferm.loteProduccion} &bull; Inicio: {ferm.fechaInicio} &bull; Dia {elapsed}/{TOTAL_DAYS}
+                  Lote: {ferm.loteProduccion} &bull; Inicio: {ferm.fechaInicio} &bull; Dia {elapsed}/{ferm.duracionDias || TOTAL_DAYS}
+                  {ferm.fase === "secundaria" && ferm.fermentacionPrimariaId && (() => {
+                    const primaria = data.find((f) => f.id === ferm.fermentacionPrimariaId);
+                    return primaria ? (
+                      <span> &bull; Origen: {primaria.loteProduccion}</span>
+                    ) : null;
+                  })()}
                 </div>
 
                 {/* Progress Bar */}
@@ -294,7 +407,7 @@ export default function CamaraFermentacion({
                   />
                   {/* Control day markers */}
                   {CONTROL_DAYS.map((day) => {
-                    const pos = (day / TOTAL_DAYS) * 100;
+                    const pos = (day / fermDuration) * 100;
                     const dotColor = getControlDotColor(ferm.controles, day, elapsed);
                     const colorClass =
                       dotColor === "green"
