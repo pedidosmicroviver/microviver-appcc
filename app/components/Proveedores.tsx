@@ -81,15 +81,16 @@ export default function Proveedores({ data, onChange }: ProveedoresProps) {
   };
 
   const handleAdd = () => {
-    if (!form.nombre || !form.codigo) return;
+    if (!form.nombre) return;
+    const safeForm = { ...form, fotos: form.fotos || [] };
     if (editingId) {
       onChange(
-        data.map((p) => (p.id === editingId ? { ...form, id: editingId } : p))
+        data.map((p) => (p.id === editingId ? { ...safeForm, id: editingId } : p))
       );
       setEditingId(null);
     } else {
       const newProveedor: Proveedor = {
-        ...form,
+        ...safeForm,
         id: generateId("prov"),
       };
       onChange([newProveedor, ...data]);
@@ -104,6 +105,11 @@ export default function Proveedores({ data, onChange }: ProveedoresProps) {
     setEditingId(id);
     setShowForm(true);
     setExpandedId(null);
+    // Scroll to top to show the form
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
   };
 
   const handleCancel = () => {
