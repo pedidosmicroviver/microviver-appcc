@@ -130,11 +130,19 @@ export default function Limpieza({ data, onChange }: LimpiezaProps) {
                   list="zonas-sugeridas"
                 />
                 <datalist id="zonas-sugeridas">
-                  <option value="Sala de produccion" />
+                  <option value="Sala 1" />
+                  <option value="Sala 2" />
+                  <option value="Sala 3" />
+                  <option value="Bano 1" />
+                  <option value="Bano 2" />
+                  <option value="Oficina" />
+                  <option value="Cocina" />
                   <option value="Almacen MP" />
+                  <option value="Almacen envases" />
+                  <option value="Almacen producto terminado" />
                   <option value="Zona envasado" />
                   <option value="Camara fermentacion" />
-                  <option value="Aseos/vestuarios" />
+                  <option value="Recepcion/expedicion" />
                 </datalist>
               </div>
               <div>
