@@ -62,7 +62,7 @@ export interface HojaEnvasado {
   producto: string;
   fecha: string;
   operario: string;
-  formatoEnvase: "vidrio_plastico" | "hdpe_rosca" | "gotero" | "vidrio_metalico";
+  formatoEnvase: string;
   loteEnvase: string;
   loteTapon: string;
   unidades: number;
@@ -161,7 +161,7 @@ export interface StockIntermedio {
   id: string;
   producto: string;
   lote: string;
-  formato: "bidon_30l" | "bidon_60l" | "bidon_120l" | "garrafa_20l" | "bote_125ml" | "bote_250ml" | "bote_500ml";
+  formato: string;
   cantidad: number;
   unidad: string;
   origenId: string;

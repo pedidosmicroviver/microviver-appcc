@@ -11,12 +11,30 @@ interface HojasEnvasadoProps {
   producciones: HojaProduccion[];
 }
 
-const formatoLabels: Record<HojaEnvasado["formatoEnvase"], string> = {
-  vidrio_plastico: "Vidrio + tapon plastico",
-  hdpe_rosca: "HDPE + tapon rosca",
-  gotero: "Gotero pipeta",
-  vidrio_metalico: "Vidrio + tapon metalico",
-};
+const FORMATOS_ENVASE = [
+  { value: "vidrio_ambar_60ml", label: "Vidrio ambar 60ml" },
+  { value: "vidrio_ambar_125ml", label: "Vidrio ambar 125ml" },
+  { value: "vidrio_ambar_250ml", label: "Vidrio ambar 250ml" },
+  { value: "vidrio_verde_250ml", label: "Vidrio verde 250ml" },
+  { value: "vidrio_ambar_90g", label: "Vidrio ambar 90g" },
+  { value: "vidrio_transp_212ml", label: "Vidrio transparente 212ml" },
+  { value: "vidrio_transp_165ml", label: "Vidrio transparente 165ml" },
+  { value: "vidrio_transp_282ml", label: "Vidrio transparente 282ml" },
+  { value: "vidrio_azul_50g", label: "Vidrio azul 50g" },
+  { value: "vidrio_azul_100ml", label: "Vidrio azul 100ml" },
+  { value: "vidrio_azul_100ml_ba", label: "Vidrio azul 100ml boca ancha" },
+  { value: "plastico_140g", label: "Plastico 140g" },
+  { value: "plastico_300g", label: "Plastico 300g" },
+  { value: "plastico_1kg", label: "Plastico 1kg" },
+  { value: "plastico_ambar_125ml", label: "Plastico ambar 125ml" },
+  { value: "plastico_750ml", label: "Plastico 750ml" },
+  { value: "kraft_100g", label: "Bolsa papel kraft 100g" },
+  { value: "kraft_50g", label: "Bolsa papel kraft 50g" },
+];
+
+const formatoLabels: Record<string, string> = Object.fromEntries(
+  FORMATOS_ENVASE.map((f) => [f.value, f.label])
+);
 
 const estadoColor: Record<HojaEnvasado["estado"], string> = {
   en_proceso: "bg-yellow-100 text-yellow-800",
@@ -36,7 +54,7 @@ const emptyForm = (): Omit<HojaEnvasado, "id"> => ({
   producto: "",
   fecha: new Date().toISOString().slice(0, 10),
   operario: "",
-  formatoEnvase: "vidrio_plastico",
+  formatoEnvase: "vidrio_ambar_125ml",
   loteEnvase: "",
   loteTapon: "",
   unidades: 0,
@@ -142,7 +160,7 @@ export default function HojasEnvasado({
               <select
                 value={form.formatoEnvase}
                 onChange={(e) =>
-                  setForm({ ...form, formatoEnvase: e.target.value as HojaEnvasado["formatoEnvase"] })
+                  setForm({ ...form, formatoEnvase: e.target.value })
                 }
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl text-base bg-white"
               >
@@ -234,7 +252,7 @@ export default function HojasEnvasado({
                   </span>
                 </div>
                 <div className="text-sm text-gray-500">
-                  {hoja.producto} &middot; {formatoLabels[hoja.formatoEnvase]} &middot;{" "}
+                  {hoja.producto} &middot; {formatoLabels[hoja.formatoEnvase] || hoja.formatoEnvase} &middot;{" "}
                   {hoja.unidades} uds &middot; {hoja.fecha} &middot; {hoja.operario}
                 </div>
               </div>
