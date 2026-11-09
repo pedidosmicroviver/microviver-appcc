@@ -14,7 +14,13 @@ const FORMATO_LABELS: Record<string, string> = {
   bidon_30l: "Bidon 30L",
   bidon_60l: "Bidon 60L",
   bidon_120l: "Bidon 120L",
+  bidon_160l: "Bidon 160L",
+  bidon_220l: "Bidon 220L",
+  garrafa_5l: "Garrafa 5L",
+  garrafa_10l: "Garrafa 10L",
   garrafa_20l: "Garrafa 20L",
+  cubo_5kg: "Cubo 5kg",
+  cubo_30kg: "Cubo 30kg",
   // Envases finales reales
   vidrio_ambar_60ml: "Vidrio ambar 60ml",
   vidrio_ambar_125ml: "Vidrio ambar 125ml",
@@ -52,9 +58,12 @@ const ENVASE_FINAL_FORMATOS = [
   "kraft_100g", "kraft_50g",
 ];
 
+const BIDON_FORMATOS = ["bidon_30l", "bidon_60l", "bidon_120l", "bidon_160l", "bidon_220l"];
+const GARRAFA_FORMATOS = ["garrafa_5l", "garrafa_10l", "garrafa_20l", "cubo_5kg", "cubo_30kg"];
+
 const TABS: { key: TabKey; label: string; formatos: string[] }[] = [
-  { key: "bidones", label: "Bidones", formatos: ["bidon_30l", "bidon_60l", "bidon_120l"] },
-  { key: "garrafas", label: "Garrafas 20L", formatos: ["garrafa_20l"] },
+  { key: "bidones", label: "Bidones", formatos: BIDON_FORMATOS },
+  { key: "garrafas", label: "Garrafas y cubos", formatos: GARRAFA_FORMATOS },
   { key: "envase_final", label: "Envase Final", formatos: ENVASE_FINAL_FORMATOS },
 ];
 
@@ -63,6 +72,8 @@ const CONVERSIONS: Record<string, { target: string; ratio: number }[]> = {
   bidon_30l: [{ target: "garrafa_20l", ratio: 1.5 }],
   bidon_60l: [{ target: "garrafa_20l", ratio: 3 }],
   bidon_120l: [{ target: "garrafa_20l", ratio: 6 }],
+  bidon_160l: [{ target: "garrafa_20l", ratio: 8 }],
+  bidon_220l: [{ target: "garrafa_20l", ratio: 11 }],
   garrafa_20l: [
     { target: "vidrio_ambar_60ml", ratio: 333 },
     { target: "vidrio_ambar_125ml", ratio: 160 },
@@ -77,6 +88,9 @@ const CONVERSIONS: Record<string, { target: string; ratio: number }[]> = {
     { target: "plastico_750ml", ratio: 26 },
   ],
 };
+// Garrafas de 10L y 5L: mismos destinos que la de 20L, en proporcion a su volumen
+CONVERSIONS.garrafa_10l = CONVERSIONS.garrafa_20l.map((c) => ({ target: c.target, ratio: Math.floor(c.ratio / 2) }));
+CONVERSIONS.garrafa_5l = CONVERSIONS.garrafa_20l.map((c) => ({ target: c.target, ratio: Math.floor(c.ratio / 4) }));
 
 const EMPTY_FORM = {
   producto: "",
@@ -100,8 +114,8 @@ export default function StockIntermedioComponent({ data, onChange }: StockInterm
   const countByGroup = (formatos: string[]) =>
     data.filter((d) => formatos.includes(d.formato) && d.estado !== "agotado").reduce((sum, d) => sum + d.cantidad, 0);
 
-  const bidonCount = countByGroup(["bidon_30l", "bidon_60l", "bidon_120l"]);
-  const garrafaCount = countByGroup(["garrafa_20l"]);
+  const bidonCount = countByGroup(BIDON_FORMATOS);
+  const garrafaCount = countByGroup(GARRAFA_FORMATOS);
   const envaseCount = countByGroup(ENVASE_FINAL_FORMATOS);
 
   const handleAdd = () => {
@@ -203,7 +217,7 @@ export default function StockIntermedioComponent({ data, onChange }: StockInterm
             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-100 border-2 border-blue-400 rounded-2xl flex items-center justify-center">
               <span className="text-2xl sm:text-3xl font-bold text-blue-700">{garrafaCount}</span>
             </div>
-            <span className="text-xs sm:text-sm font-medium text-blue-700 mt-1">Garrafas 20L</span>
+            <span className="text-xs sm:text-sm font-medium text-blue-700 mt-1">Garrafas y cubos</span>
           </div>
 
           {/* Arrow */}
