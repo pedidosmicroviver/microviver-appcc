@@ -237,7 +237,7 @@ export default function MateriasPrimas({ data, onChange }: MateriasPrimasProps) 
                   <div className="text-sm text-gray-600 mt-1 flex flex-wrap gap-x-4">
                     <span>Lote: {mp.lote}</span>
                     <span>Prov: {mp.proveedor}</span>
-                    <span>Cad: {mp.fechaCaducidad}</span>
+                    <span>Cad: {mp.fechaCaducidad || "sin dato"}</span>
                     <span>
                       {mp.cantidad} {mp.unidad}
                     </span>

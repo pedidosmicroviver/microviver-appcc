@@ -24,10 +24,11 @@ export default function Dashboard({
 
   // --- Computed alerts ---
   const mpCaducadas = materiasPrimas.filter(
-    (mp) => new Date(mp.fechaCaducidad) < hoy
+    (mp) => !!mp.fechaCaducidad && new Date(mp.fechaCaducidad) < hoy
   );
 
   const mpProximas = materiasPrimas.filter((mp) => {
+    if (!mp.fechaCaducidad) return false;
     const cad = new Date(mp.fechaCaducidad);
     const diffDias = Math.ceil(
       (cad.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)

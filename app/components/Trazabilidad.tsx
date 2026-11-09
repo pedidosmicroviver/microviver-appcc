@@ -251,7 +251,7 @@ export default function Trazabilidad({
                                       <span>Lote: {mp.lote}</span>
                                       <span>Proveedor: {mp.proveedor}</span>
                                       <span>
-                                        Caducidad: {mp.fechaCaducidad}
+                                        Caducidad: {mp.fechaCaducidad || "sin dato"}
                                       </span>
                                     </div>
                                   </div>
